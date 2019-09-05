@@ -1,4 +1,6 @@
-# react-native-cachemere
+# react-native-cachemere 
+![npm version](https://img.shields.io/npm/v/react-native-cachemere)
+![npm downloads](https://img.shields.io/npm/dt/react-native-cachemere)
 
 An async cache manager.
 
