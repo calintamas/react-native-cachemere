@@ -1,4 +1,4 @@
-# react-native-cachemere 
+# react-native-cachemere
 ![npm version](https://img.shields.io/npm/v/react-native-cachemere)
 ![npm downloads](https://img.shields.io/npm/dt/react-native-cachemere)
 
@@ -65,8 +65,20 @@ Returns the data as a parsed JSON. If there's no cached data for that `key` or t
 
 > When cache expires it is automatically cleared from the storage.
 
+### getAll
+```js
+const all = await Cache.getAll()
+```
+Returns an array with all cached objects, parsed.
+
 ### clear
 ```js
 await Cache.clear(key)
 ```
 Cache is removed for the specified `key`.
+
+### clearExpired
+```js
+await Cache.clearExpired()
+```
+Remove all expired cache. Can be called at app startup to ensure a declutered Storage.
