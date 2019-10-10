@@ -1,4 +1,5 @@
 import Storage from './storage'
+import { isExpired, addPrefix, onlyMyKeys } from './utils'
 
 class Cache {
   static set(key, data, ttl, attempts = null) {
@@ -17,20 +18,17 @@ class Cache {
       }
     }
 
-    return Storage.store(key, payload);
+    return Storage.store(addPrefix(key), payload);
   }
 
   static async get(key) {
     try {
-      const payload = await Storage.get(key);
+      const payload = await Storage.get(addPrefix(key));
       if (!payload) {
         throw new Error('No cached data');
       }
 
-      const now = new Date();
-      const expiryDate = new Date(payload.expiry_date);
-
-      if (expiryDate < now) {
+      if (isExpired(payload.expiry_date)) {
         this.clear(key);
         throw new Error('Expired cached data');
       }
@@ -55,11 +53,23 @@ class Cache {
   }
 
   static _update(key, data) {
-    return Storage.update(key, data);
+    return Storage.update(addPrefix(key), data);
   }
 
   static clear(key) {
-    return Storage.remove(key);
+    return Storage.remove(addPrefix(key));
+  }
+
+  static async clearExpired() {
+    const all = await this.getAll({ preserveKeys: true });
+    const expiredKeys = all.filter(i => isExpired(i.expiry_date)).map(i => i.__cachemere__key)
+    return Storage.multiRemove(expiredKeys)
+  }
+
+  static async getAll(options = {}) {
+    const allKeys = await Storage.getAllKeys()
+    const myKeys = onlyMyKeys(allKeys)
+    return Storage.multiGet(myKeys, options.preserveKeys)
   }
 
   // Define some static TTLs
