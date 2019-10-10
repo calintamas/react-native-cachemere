@@ -1,6 +1,6 @@
 {
   "name": "react-native-cachemere",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "An async cache manager for React Native",
   "main": "index.js",
   "scripts": {
