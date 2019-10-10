@@ -81,4 +81,4 @@ Cache is removed for the specified `key`.
 ```js
 await Cache.clearExpired()
 ```
-Remove all expired cache. Can be called at app startup to ensure a declutered Storage.
+Remove all expired cache. Can be called at app startup to ensure a decluttered Storage.
