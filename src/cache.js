@@ -52,6 +52,12 @@ class Cache {
     }
   }
 
+  static async getAll(options = {}) {
+    const allKeys = await Storage.getAllKeys()
+    const myKeys = onlyMyKeys(allKeys)
+    return Storage.multiGet(myKeys, options.preserveKeys)
+  }
+
   static _update(key, data) {
     return Storage.update(addPrefix(key), data);
   }
@@ -66,10 +72,10 @@ class Cache {
     return Storage.multiRemove(expiredKeys)
   }
 
-  static async getAll(options = {}) {
-    const allKeys = await Storage.getAllKeys()
-    const myKeys = onlyMyKeys(allKeys)
-    return Storage.multiGet(myKeys, options.preserveKeys)
+  static async clearByRegex(regex) {
+    const all = await this.getAll()
+    const matchedKeys = all.filter(i => i.__cachemere__key.match(new RegExp(regex))).map(i => addPrefix(i.__cachemere__key))
+    return Storage.multiRemove(matchedKeys)
   }
 
   // Define some static TTLs
