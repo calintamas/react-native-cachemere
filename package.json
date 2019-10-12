@@ -1,6 +1,6 @@
 {
   "name": "react-native-cachemere",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "An async cache manager for React Native",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "react-native"
   ],
   "author": "Calin Tamas <calinntamas@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.6.4",
     "@babel/preset-env": "^7.6.3",
