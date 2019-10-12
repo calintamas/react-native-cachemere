@@ -4,7 +4,7 @@ const isExpired = (expiryDate) => {
   const now = new Date();
   const expiryDateAsDate = new Date(expiryDate);
 
-  return expiryDate < now
+  return expiryDateAsDate < now
 }
 
 const addPrefix = (str = '') => {
