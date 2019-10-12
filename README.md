@@ -85,7 +85,7 @@ Remove all expired cache. Can be called at app startup to ensure a decluttered S
 
 ### clearByRegex
 ```js
-await Cache.clearByRegex()
+await Cache.clearByRegex(regex)
 ```
 Remove all cache with keys that pass the `regex` condition. 
 Can be used when fetching the data with pagination and need to cache every group of data received.
