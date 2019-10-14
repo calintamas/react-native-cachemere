@@ -12,6 +12,10 @@
   ],
   "author": "Calin Tamas <calinntamas@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/calintamas/react-native-cachemere.git"
+  },
   "devDependencies": {
     "@babel/core": "^7.6.4",
     "@babel/preset-env": "^7.6.3",
