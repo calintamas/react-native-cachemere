@@ -1,31 +1,56 @@
 {
   "name": "react-native-cachemere",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "An async cache manager for React Native",
-  "main": "index.js",
+  "main": "./lib/index.js",
+  "types": "./lib/types/index.d.ts",
+  "files": [
+    "/lib"
+  ],
   "scripts": {
-    "test": "jest"
+    "prepare": "husky install",
+    "build": "rm -rf ./lib && tsc",
+    "prettier": "./node_modules/.bin/prettier --write",
+    "lint": "./node_modules/.bin/eslint --fix",
+    "lint-staged": "./node_modules/.bin/lint-staged",
+    "test": "./node_modules/.bin/jest"
   },
   "keywords": [
     "cache",
     "react-native"
   ],
-  "author": "Calin Tamas <calinntamas@gmail.com>",
+  "author": "Calin Tamas <calintamas2@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/calintamas/react-native-cachemere.git"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.4",
-    "@babel/preset-env": "^7.6.3",
-    "@babel/runtime": "^7.6.3",
-    "babel-jest": "^26.0.0",
-    "jest": "^26.0.1"
+    "@babel/core": "^7.15.8",
+    "@types/jest": "^27.0.1",
+    "eslint-config-backpacker-react-ts": "^0.1.0",
+    "husky": "^7.0.2",
+    "import-sort-style-module": "^6.0.0",
+    "jest": "^27.1.1",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.4.1",
+    "prettier-plugin-import-sort": "^0.0.7",
+    "typescript": "^4.4.3",
+    "metro-react-native-babel-preset": "^0.64.0"
   },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "<rootDir>/node_modules"
-    ]
+  "peerDependencies": {
+    "react": ">=16.9.0",
+    "react-native": ">=0.61.5",
+    "@react-native-async-storage/async-storage": ">=1.8.0"
+  },
+  "importSort": {
+    ".js, .jsx, .ts, .tsx": {
+      "style": "module",
+      "parser": "typescript"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,md}": "yarn prettier",
+    "*.{js,jsx,ts,tsx}": "yarn lint"
   }
 }
