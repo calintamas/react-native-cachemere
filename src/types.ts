@@ -1,5 +1,10 @@
+export enum ReplacementPolicies {
+  FIFO = 'FIFO',
+  LRU = 'LRU',
+}
+
 export type ReplacementPolicy = Readonly<{
-  type: ''
+  type: ReplacementPolicies
   limit: number
 }>
 
