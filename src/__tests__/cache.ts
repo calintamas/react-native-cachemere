@@ -6,10 +6,12 @@ import { TTL_1H } from '../constants';
 describe('Cache', () => {
   const testCache = new Cache('test');
 
-  MockDate.set('2021-10-31');
-
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  beforeAll(() => {
+    MockDate.set('2021-10-31T00:00:00.000Z');
   });
 
   it('should set default data', () => {
