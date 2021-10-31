@@ -32,8 +32,9 @@ jobs:
 
       - name: Setup React Native environment
         run: |
-          yarn add react@17.0.1
-          yarn add react-native@0.64.2
+          yarn add react@17.0.2
+          yarn add react-native@0.66.1
+          yarn add @react-native-async-storage/async-storage@1.15.9
 
       - name: Run tests
         run: yarn test --coverage
