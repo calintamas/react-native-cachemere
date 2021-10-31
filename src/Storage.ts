@@ -1,91 +1,84 @@
 import AsyncStorage, {
-  AsyncStorageStatic,
-} from '@react-native-async-storage/async-storage'
+  AsyncStorageStatic
+} from '@react-native-async-storage/async-storage';
 
-import Utils from './utils'
-
-class Storage {
-  StorageSystem: AsyncStorageStatic
+export class Storage<DataType> {
+  StorageSystem: AsyncStorageStatic;
 
   constructor() {
-    this.StorageSystem = AsyncStorage
+    this.StorageSystem = AsyncStorage;
   }
 
-  async store(key: string, value: any): Promise<string | null> {
+  async store(key: string, value: DataType): Promise<boolean> {
     try {
-      await this.StorageSystem.setItem(key, JSON.stringify(value))
-
-      return value
+      await this.StorageSystem.setItem(key, JSON.stringify(value));
+      return true;
     } catch (err) {
-      return null
+      return false;
     }
   }
 
-  async get(key: string): Promise<any> {
+  async get(key: string): Promise<DataType | null> {
     try {
-      const value = await this.StorageSystem.getItem(key)
-
-      if (value === null) {
-        return value
+      const data = await this.StorageSystem.getItem(key);
+      if (!data) {
+        throw new Error('No data');
       }
-
-      return JSON.parse(value)
+      return JSON.parse(data);
     } catch (err) {
-      return null
+      return null;
     }
   }
 
   async remove(key: string): Promise<boolean> {
     try {
-      await this.StorageSystem.removeItem(key)
-
-      return true
+      await this.StorageSystem.removeItem(key);
+      return true;
     } catch (err) {
-      return false
+      return false;
     }
   }
 
-  async update(key: string, data: string): Promise<string | null> {
-    return this.store(key, data)
+  async update(key: string, data: DataType): Promise<boolean> {
+    return this.store(key, data);
   }
 
-  // Gets all keys known to your app, for all callers, libraries.
-  async getAllKeys(): Promise<string[]> {
+  async getKeysWithPrefix(prefix: string): Promise<string[]> {
     try {
-      const allKeys = await this.StorageSystem.getAllKeys()
-
-      return allKeys
+      const keys = await this.StorageSystem.getAllKeys();
+      const keysWithPrefix = keys.filter((item) =>
+        item.match(new RegExp(`^${prefix}+`))
+      );
+      return keysWithPrefix;
     } catch (err) {
-      return []
+      return [];
     }
   }
 
-  async multiGet(keys: string[] = [], preserveKeys = false) {
+  async multiGet(keys: string[]): Promise<(DataType & { key: string })[]> {
     try {
-      const all: [string, string | null][] = await this.StorageSystem.multiGet(
-        keys
-      )
+      const all = await this.StorageSystem.multiGet(keys);
+      const definedValues = all.filter(([, value]) => value !== null);
 
-      return all.map((item) => {
+      return definedValues.map(([key, value]) => {
+        const data = JSON.parse(value as string) as DataType;
         return {
-          ...JSON.parse(String(item[1])),
-          __cachemere__key: preserveKeys ? item[0] : Utils.stripPrefix(item[0]),
-        }
-      })
+          ...data,
+          key
+        };
+      });
     } catch (err) {
-      return []
+      return [];
     }
   }
 
   async multiRemove(keys: string[] = []): Promise<boolean> {
     try {
-      await this.StorageSystem.multiRemove(keys)
+      await this.StorageSystem.multiRemove(keys);
 
-      return true
+      return true;
     } catch (err) {
-      return false
+      return false;
     }
   }
 }
-
-export default Storage

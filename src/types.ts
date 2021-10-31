@@ -1,21 +1,14 @@
-export enum ReplacementPolicies {
-  FIFO = 'FIFO',
-  LRU = 'LRU',
-}
-
-export type ReplacementPolicy = Readonly<{
-  type: ReplacementPolicies
-  limit: number
-}>
+export type CacheReplacementPolicy = 'LRU' | 'FIFO';
+export type CacheTTL = number;
+export type CacheSize = number;
 
 export type CacheOptions = {
-  ttl: number
-  replacementPolicy?: ReplacementPolicy
-  prefix?: string
-}
+  ttl?: CacheTTL;
+  size?: CacheSize;
+  replacementPolicy?: CacheReplacementPolicy;
+};
 
-export type CacheObj = Readonly<{
-  data: string
-  expiry_date: number
-  attempts?: number
-}>
+export type CacheObj<DataType> = Readonly<{
+  data: DataType;
+  expiryDate: number;
+}>;
