@@ -7,7 +7,7 @@ import {
   CacheSize,
   CacheTTL
 } from './types';
-import { addPrefix } from './utils/string';
+import { addPrefix, stripPrefix } from './utils/string';
 
 function isExpired(expiryDate: number | string | Date) {
   const now = new Date();
@@ -24,13 +24,13 @@ export class Cache<DataType> {
 
   replacementPolicy: CacheReplacementPolicy;
 
-  size?: CacheSize;
+  size: CacheSize;
 
   constructor(cacheName: string, cacheOptions?: CacheOptions) {
     const {
       ttl = TTL_1H,
       replacementPolicy = 'LRU',
-      size // TODO add a default size
+      size = 10 // TODO maybe increase this?
     } = cacheOptions ?? {};
 
     this.storage = new Storage();
@@ -40,14 +40,24 @@ export class Cache<DataType> {
     this.size = size;
   }
 
-  set(key: string, data: DataType) {
+  async set(key: string, data: DataType) {
     const now = new Date();
     const payload: CacheObj<DataType> = {
       data,
       expiryDate: now.setSeconds(now.getSeconds() + this.ttl) // save as Unix timestamp (milliseconds)
     };
 
-    // TODO implement replacement policies; take into account `size` and `replacementPolicy` type
+    if (this.replacementPolicy === 'FIFO') {
+      const allKeys = await this.getAll();
+
+      if (allKeys.length >= this.size) {
+        const sortedList = allKeys.sort((a, b) =>
+          a.expiryDate > b.expiryDate ? 1 : -1
+        );
+
+        await this.clear(stripPrefix(sortedList[0].key, this.name));
+      }
+    }
 
     return this.storage.store(addPrefix(key, this.name), payload);
   }
