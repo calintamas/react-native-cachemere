@@ -1,35 +1,46 @@
 import { ItemNotFoundError } from './ItemNotFoundError';
 import { StorageEngine } from './types';
 
-export class MemoryStorage implements StorageEngine {
-  storage: Record<string, string>;
+export type StorageData = {
+  key: string;
+  value: unknown;
+};
+
+type NarrowByKey<T, N> = T extends { key: N } ? T : never;
+
+export class MemoryStorage<T extends StorageData> implements StorageEngine {
+  private storage: Map<T['key'], Promise<T['value']>>;
 
   constructor() {
-    this.storage = {};
+    this.storage = new Map();
   }
 
-  setItem<T>(key: string, value: T): Promise<boolean> {
+  async setItem<K extends T['key']>(
+    key: K,
+    value: NarrowByKey<T, K>['value']
+  ): Promise<boolean> {
     return new Promise((resolve) => {
       try {
-        this.storage[key] = JSON.stringify(value);
+        this.storage.set(key, Promise.resolve(value));
         return resolve(true);
-      } catch (err) {
+      } catch {
         return resolve(false);
       }
     });
   }
 
-  getItem<T>(key: string): Promise<T | null> {
+  getItem<K extends T['key']>(
+    key: K
+  ): Promise<NarrowByKey<T, K>['value'] | undefined> {
     return new Promise((resolve) => {
       try {
-        const serializedValue = this.storage[key];
-        if (serializedValue === undefined) {
-          throw new ItemNotFoundError(`Value for key '${key}' not found`);
+        const value = this.storage.get(key);
+        if (value === undefined) {
+          throw new Error(`Value for key '${key}' not found`);
         }
-        const value = JSON.parse(serializedValue);
         return resolve(value);
-      } catch (err) {
-        return resolve(null);
+      } catch {
+        return resolve(undefined);
       }
     });
   }
@@ -87,4 +98,29 @@ export class MemoryStorage implements StorageEngine {
       }
     });
   }
+}
+
+type KeyMap =
+  | {
+      key: 'test';
+      value: {
+        foo: string;
+      };
+    }
+  | {
+      key: 'test2';
+      value: {
+        bar: string;
+      };
+    };
+
+const cache = new MemoryStorage<KeyMap>();
+
+cache.setItem('test', {
+  foo: '2'
+});
+
+const val = await cache.getItem('test2');
+if (val) {
+  val.bar;
 }
